@@ -1,0 +1,37 @@
+{
+  "name": "mailcheck-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for cold-email deliverability: SPF/DKIM/DMARC/MX domain checks + spam-trigger copy scanning. Works in Claude Desktop, Cursor, Windsurf, Zed, and any MCP client.",
+  "bin": {
+    "mailcheck-mcp": "mcp/server.js"
+  },
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "smoke": "node mcp/smoke.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "cursor",
+    "cold-email",
+    "deliverability",
+    "spf",
+    "dkim",
+    "dmarc",
+    "email"
+  ],
+  "license": "MIT",
+  "author": "ZERO",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rawbee00/mailcheck-mcp"
+  },
+  "files": [
+    "mcp/",
+    "src/"
+  ]
+}
