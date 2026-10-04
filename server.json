@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.myselfz3ro/mailcheck-mcp",
+  "title": "MailCheck",
+  "description": "Cold-email deliverability for your AI: SPF/DKIM/DMARC/MX domain checks + spam-trigger copy scanning. No API key, no signup, nothing leaves your machine.",
+  "version": "1.0.0",
+  "websiteUrl": "https://github.com/myselfz3ro/mailcheck-mcp",
+  "repository": {
+    "url": "https://github.com/myselfz3ro/mailcheck-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "mailcheck-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "tool": "zero-manual",
+      "version": "1.0.0"
+    }
+  }
+}

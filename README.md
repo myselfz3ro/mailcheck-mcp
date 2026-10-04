@@ -18,7 +18,7 @@ Cold email silently dies in spam folders when auth (SPF/DKIM/DMARC) is misconfig
 Requires **Node ≥ 18** and **Python 3** (used for the DNS/dig logic), plus `dig` (standard on macOS/Linux).
 
 ```bash
-git clone https://github.com/rawbee00/mailcheck-mcp
+git clone https://github.com/myselfz3ro/mailcheck-mcp
 cd mailcheck-mcp
 npm run smoke   # verify it works
 ```
