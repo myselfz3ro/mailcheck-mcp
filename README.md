@@ -15,7 +15,24 @@ Cold email silently dies in spam folders when auth (SPF/DKIM/DMARC) is misconfig
 
 ## Install
 
-Requires **Node ≥ 18** and **Python 3** (used for the DNS/dig logic), plus `dig` (standard on macOS/Linux).
+Requires **Node ≥ 18** and **Python 3** (used for the DNS/dig logic), plus `dig` (standard on macOS/Linux). No signup, no API key — nothing leaves your machine.
+
+### Fastest — one line, no clone, no npm account
+
+```json
+{
+  "mcpServers": {
+    "mailcheck": {
+      "command": "npx",
+      "args": ["-y", "github:myselfz3ro/mailcheck-mcp"]
+    }
+  }
+}
+```
+
+Drop that into your MCP client's config and restart. `npx` fetches and runs it directly from GitHub — that's the whole install.
+
+### Or clone it
 
 ```bash
 git clone https://github.com/myselfz3ro/mailcheck-mcp
@@ -25,18 +42,7 @@ npm run smoke   # verify it works
 
 ### Claude Desktop
 
-Add to `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "mailcheck": {
-      "command": "node",
-      "args": ["/absolute/path/to/mailcheck-mcp/mcp/server.js"]
-    }
-  }
-}
-```
+Add the `npx` block above to `claude_desktop_config.json` (or, if cloned, point `command: "node"` at `/absolute/path/to/mailcheck-mcp/mcp/server.js`).
 
 ### Cursor / Windsurf / Zed
 
