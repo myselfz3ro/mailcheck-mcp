@@ -98,11 +98,42 @@ def check_domain(domain):
         real = [r for r in recs if "v=dkim1" in r.lower() or "p=" in r.lower()]
         if real:
             dkim_found_selectors.append(sel)
+    # Infer managed mail provider from MX (they DKIM-sign with their own keys,
+    # so a custom-selector miss is a FALSE NEGATIVE, not a real absence).
+    mx_txt = " ".join(result["checks"]["mx"].get("records", [])).lower()
+    provider = None
+    if "google.com" in mx_txt or "googlemail" in mx_txt or "aspmx.l.google" in mx_txt:
+        provider = "Google Workspace / Gmail"
+    elif "outlook.com" in mx_txt or "protection.outlook" in mx_txt:
+        provider = "Microsoft 365 / Outlook"
+    elif "ionos" in mx_txt or "1and1" in mx_txt:
+        provider = "IONOS"
+    elif "zoho" in mx_txt:
+        provider = "Zoho"
+    elif "mailgun" in mx_txt or "sendgrid" in mx_txt or "amazonses" in mx_txt:
+        provider = "ESP (Mailgun/SendGrid/SES)"
+
+    dkim_found = bool(dkim_found_selectors)
+    # provider-managed = effectively signed even if no custom selector on the domain
+    provider_managed = (provider is not None) and not dkim_found
+    if dkim_found:
+        dkim_note = "Custom DKIM selector published on the domain."
+    elif provider_managed:
+        dkim_note = (f"No custom selector found, but MX points to {provider}, which "
+                     f"DKIM-signs outbound mail with its OWN keys. Mail is almost "
+                     f"certainly signed -- verify with an inbox-placement test, not a "
+                     f"selector lookup.")
+    else:
+        dkim_note = ("No DKIM selector found at common names and no managed provider "
+                     "detected in MX. DKIM may genuinely be missing -- confirm with your "
+                     "mail provider or an inbox-placement test.")
     result["checks"]["dkim"] = {
-        "found": bool(dkim_found_selectors),
+        "found": dkim_found,
+        "provider_managed": provider_managed,
+        "signing_provider": provider,
         "selectors_checked": COMMON_DKIM_SELECTORS,
         "selectors_found": dkim_found_selectors,
-        "note": "DKIM selectors are provider-specific; absence here does not prove no DKIM exists, only that none of the common selectors were found",
+        "note": dkim_note,
     }
 
     # Score
@@ -114,7 +145,7 @@ def check_domain(domain):
         score += 1
     if result["checks"]["dmarc"]["found"]:
         score += 1
-    if result["checks"]["dkim"]["found"]:
+    if result["checks"]["dkim"]["found"] or result["checks"]["dkim"]["provider_managed"]:
         score += 1
     result["deliverability_score"] = f"{score}/{max_score}"
     result["score_raw"] = score
@@ -191,7 +222,12 @@ def main():
         dmarc = d["checks"]["dmarc"]
         print(f"  DMARC:  {'OK (policy=' + str(dmarc['policy']) + ')' if dmarc['found'] else 'MISSING'}")
         dkim = d["checks"]["dkim"]
-        print(f"  DKIM:   {'OK (selectors: ' + ', '.join(dkim['selectors_found']) + ')' if dkim['found'] else 'not found at common selectors'}")
+        if dkim['found']:
+            print(f"  DKIM:   OK (selectors: {', '.join(dkim['selectors_found'])})")
+        elif dkim.get('provider_managed'):
+            print(f"  DKIM:   provider-managed via {dkim['signing_provider']} (signed, not on your domain)")
+        else:
+            print("  DKIM:   not found at common selectors")
 
     if "copy_check" in output:
         c = output["copy_check"]
